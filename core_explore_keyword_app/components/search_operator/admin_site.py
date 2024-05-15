@@ -7,6 +7,8 @@ class CustomSearchOperatorAdmin(admin.ModelAdmin):
     """CustomSearchOperatorAdmin"""
 
     readonly_fields = ["xpath_list", "dot_notation_list"]
+    list_display = ["name"]
+    search_fields = ["name"]
 
     def has_add_permission(self, request, obj=None):
         """Prevent from manually adding Search Operators"""

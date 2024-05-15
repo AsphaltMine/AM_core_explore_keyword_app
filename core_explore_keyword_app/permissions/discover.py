@@ -25,13 +25,19 @@ def init_permissions(apps):
             name=main_rights.DEFAULT_GROUP
         )
 
+        # Get or Create the read_only group
+        read_only_group, created = group.objects.get_or_create(
+            name=main_rights.READ_ONLY_GROUP
+        )
+
         # Get explore keyword permissions
         explore_access_perm = permission.objects.get(
             codename=explore_keyword_rights.EXPLORE_KEYWORD_ACCESS
         )
 
-        # Add permissions to default group
+        # Add permissions to default and read_only groups
         default_group.permissions.add(explore_access_perm)
+        read_only_group.permissions.add(explore_access_perm)
     except Exception as exception:
         logger.error(
             "Impossible to init explore_keyword permissions: %s"

@@ -176,7 +176,7 @@ var addOperatorTagStyle = function() {
 var initAutocomplete = function () {
     $("#id_keywords").tagit({
         allowSpaces: false,
-        placeholderText: 'Enter keywords, or leave blank to retrieve all records',
+        placeholderText: 'Search records, or leave blank for all',
         afterTagRemoved: function (event, ui) {
             showHidePlaceholder($(this));
         },

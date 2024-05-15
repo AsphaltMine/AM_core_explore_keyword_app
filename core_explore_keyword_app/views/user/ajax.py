@@ -24,11 +24,9 @@ from core_explore_keyword_app.components.persistent_query_keyword.models import 
 )
 from core_explore_keyword_app.forms import KeywordForm
 from core_explore_keyword_app.permissions import rights
+from core_explore_keyword_app.utils.keywords import build_keyword_query
 from core_main_app.components.template import api as template_api
 from core_main_app.utils import decorators
-from core_main_app.utils.databases.mongo.pymongo_database import (
-    get_full_text_query,
-)
 from core_main_app.utils.query.mongo.prepare import sanitize_value
 
 logger = logging.getLogger("core_explore_keyword_app.views.user.ajax")
@@ -158,8 +156,7 @@ class SuggestionsKeywordSearchView(View):
                 template_ids, request=request
             )
         )
-        # TODO: improve query to get better results
-        query.content = json.dumps(get_full_text_query(keywords))
+        query.content = json.dumps(build_keyword_query([keywords]) or {})
         # Data source is local
         query.data_sources = [create_local_data_source(request)]
         return query
@@ -177,7 +174,10 @@ class SuggestionsKeywordSearchView(View):
         """
         # Prepare keywords
         word_list = re.sub(r"[^\w]", " ", keywords).split()
-        word_list = [x + "|" + x + r"\w+" for x in word_list]
+        if not word_list:
+            return
+
+        word_list = [r"\w*" + re.escape(x) + r"\w*" for x in word_list]
         word_list = "|".join(word_list)
         for result in results:
             # Extract suggestions from data
